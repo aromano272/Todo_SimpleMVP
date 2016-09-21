@@ -26,7 +26,6 @@ import com.example.aromano.mvpsimple.data.source.ITasksDataSource;
 import com.example.aromano.mvpsimple.data.source.TasksRepository;
 import com.example.aromano.mvpsimple.data.source.local.TasksLocalDataSource;
 import com.example.aromano.mvpsimple.data.source.remote.TasksRemoteDataSource;
-import com.example.aromano.mvpsimple.edittask.EditTaskActivity;
 
 import java.util.ArrayList;
 import java.util.List;

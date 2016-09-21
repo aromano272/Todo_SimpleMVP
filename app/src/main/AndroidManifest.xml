@@ -17,8 +17,6 @@
         </activity>
         <activity android:name=".addtask.AddEditTaskActivity">
         </activity>
-        <activity android:name=".edittask.EditTaskActivity">
-        </activity>
     </application>
 
 </manifest>
