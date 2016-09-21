@@ -19,6 +19,8 @@ public interface ITasksPresenter extends BasePresenter {
 
     void deleteTask(Task task);
 
-    void refreshTasks(boolean forceUpdate);
+    void loadTasks(boolean forceUpdate);
+
+    void result(int requestCode, int resultCode);
 
 }

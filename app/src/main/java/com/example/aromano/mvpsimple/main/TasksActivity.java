@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.example.aromano.mvpsimple.BaseActivity;
 import com.example.aromano.mvpsimple.R;
-import com.example.aromano.mvpsimple.addtask.AddTaskActivity;
+import com.example.aromano.mvpsimple.addtask.AddEditTaskActivity;
 import com.example.aromano.mvpsimple.data.Task;
 import com.example.aromano.mvpsimple.data.source.ITasksDataSource;
 import com.example.aromano.mvpsimple.data.source.TasksRepository;
@@ -45,9 +45,15 @@ public class TasksActivity extends BaseActivity implements ITasksView {
 
         initializeView();
 
-        ITasksDataSource tasksRepository = TasksRepository.getInstance(new TasksRemoteDataSource(), TasksLocalDataSource.getInstance(getApplicationContext()));
+        ITasksDataSource tasksRepository = TasksRepository.getInstance(TasksRemoteDataSource.getInstance(), TasksLocalDataSource.getInstance(getApplicationContext()));
 
         new TasksPresenter(tasksRepository, this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.start();
     }
 
     private void initializeView() {
@@ -63,7 +69,6 @@ public class TasksActivity extends BaseActivity implements ITasksView {
                 presenter.addTaskClicked();
             }
         });
-
     }
 
     @Override
@@ -73,15 +78,15 @@ public class TasksActivity extends BaseActivity implements ITasksView {
 
     @Override
     public void showAddTask() {
-        Intent intent = new Intent(this, AddTaskActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(this, AddEditTaskActivity.class);
+        startActivityForResult(intent, AddEditTaskActivity.RC_ADD_TASK);
     }
 
     @Override
     public void showEditTask(Task task) {
-        Intent intent = new Intent(this, EditTaskActivity.class);
+        Intent intent = new Intent(this, AddEditTaskActivity.class);
         intent.putExtra("task", task);
-        startActivity(intent);
+        startActivityForResult(intent, AddEditTaskActivity.RC_ADD_TASK);
     }
 
     @Override
@@ -99,7 +104,7 @@ public class TasksActivity extends BaseActivity implements ITasksView {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     presenter.deleteTask(task);
-                    presenter.refreshTasks(false);
+                    presenter.loadTasks(false);
                     dialogInterface.dismiss();
                 }
             })
@@ -130,7 +135,7 @@ public class TasksActivity extends BaseActivity implements ITasksView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_action_refresh:
-                presenter.refreshTasks(true);
+                presenter.loadTasks(true);
                 break;
         }
         return true;
@@ -140,6 +145,11 @@ public class TasksActivity extends BaseActivity implements ITasksView {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_tasks, menu);
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        presenter.result(requestCode, resultCode);
     }
 
     /**
@@ -210,9 +220,12 @@ public class TasksActivity extends BaseActivity implements ITasksView {
 
             TextView tv_title = (TextView) rootView.findViewById(R.id.tv_title);
             TextView tv_description = (TextView) rootView.findViewById(R.id.tv_description);
+            TextView tv_timestamp = (TextView) rootView.findViewById(R.id.tv_timestamp);
             CheckBox cb_completed = (CheckBox) rootView.findViewById(R.id.cb_completed);
+
             tv_title.setText(task.getTitle());
             tv_description.setText(task.getDescription());
+            tv_timestamp.setText(task.getFormattedTimestamp());
 
             // Active/completed task UI
             cb_completed.setChecked(task.isCompleted());

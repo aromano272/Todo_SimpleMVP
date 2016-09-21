@@ -24,7 +24,11 @@
         <!-- background of the  -->
         <!-- <item name="android:background">@color/color_primary</item> -->
         <!-- Overflow -->
-        <!--<item name="android:itemTextAppearance">@style/menuItemColor</item>-->
+        <item name="android:itemTextAppearance">@style/menuItemColor</item>
+    </style>
+
+    <style name="menuItemColor">
+        <item name="android:textColor">#000</item>
     </style>
 
 </resources>

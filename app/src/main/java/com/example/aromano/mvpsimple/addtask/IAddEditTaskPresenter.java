@@ -7,7 +7,7 @@ import com.example.aromano.mvpsimple.data.Task;
  * Created by aRomano on 20/09/2016.
  */
 
-public interface IAddTaskPresenter extends BasePresenter {
+public interface IAddEditTaskPresenter extends BasePresenter {
 
     void confirmClicked();
 

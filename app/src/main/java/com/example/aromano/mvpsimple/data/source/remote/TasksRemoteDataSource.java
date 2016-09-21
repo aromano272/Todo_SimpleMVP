@@ -1,7 +1,12 @@
 package com.example.aromano.mvpsimple.data.source.remote;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 import com.example.aromano.mvpsimple.data.Task;
 import com.example.aromano.mvpsimple.data.source.ITasksDataSource;
+import com.example.aromano.mvpsimple.data.source.local.TasksDbHelper;
+import com.example.aromano.mvpsimple.data.source.local.TasksLocalDataSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,11 +18,21 @@ import java.util.Map;
  */
 public class TasksRemoteDataSource implements ITasksDataSource {
 
+    private static TasksRemoteDataSource INSTANCE;
+
     // todo implement proper remote with firebase or smt
     private Map<String, Task> cache;
 
-    public TasksRemoteDataSource() {
+    // Prevent direct instantiation.
+    private TasksRemoteDataSource() {
         cache = new HashMap<>();
+    }
+
+    public static TasksRemoteDataSource getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new TasksRemoteDataSource();
+        }
+        return INSTANCE;
     }
 
     @Override

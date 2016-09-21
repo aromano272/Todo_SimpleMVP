@@ -19,9 +19,10 @@ package com.example.aromano.mvpsimple.data.source.local;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class TasksDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
 
     public static final String DATABASE_NAME = "Tasks.db";
 
@@ -39,7 +40,7 @@ public class TasksDbHelper extends SQLiteOpenHelper {
                     TasksLocalDataTables.TaskEntry.COLUMN_NAME_ENTRY_ID + TEXT_TYPE + COMMA_SEP +
                     TasksLocalDataTables.TaskEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
                     TasksLocalDataTables.TaskEntry.COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +
-                    TasksLocalDataTables.TaskEntry.COLUMN_NAME_COMPLETED + BOOLEAN_TYPE +
+                    TasksLocalDataTables.TaskEntry.COLUMN_NAME_COMPLETED + BOOLEAN_TYPE + COMMA_SEP +
                     TasksLocalDataTables.TaskEntry.COLUMN_NAME_TIMESTAMP + LONG_TYPE +
             " )";
 
@@ -53,6 +54,9 @@ public class TasksDbHelper extends SQLiteOpenHelper {
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Not required as at version 1
+        db.execSQL("drop table if exists " + TasksLocalDataTables.TaskEntry.TABLE_NAME);
+        Log.d("TasksDbHelper", "onUpgrade");
+        onCreate(db);
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

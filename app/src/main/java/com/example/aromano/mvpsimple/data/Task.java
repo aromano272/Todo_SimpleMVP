@@ -35,7 +35,6 @@ public class Task implements Parcelable {
     }
 
 
-
     public String getId() {
         return id;
     }
@@ -70,6 +69,32 @@ public class Task implements Parcelable {
 
     public void resetTimestamp() {
         this.timestamp = Calendar.getInstance().getTimeInMillis();
+    }
+
+    public String getFormattedTimestamp() {
+        String formatted;
+
+        Calendar createdDate = Calendar.getInstance();
+        createdDate.setTimeInMillis(timestamp);
+        Calendar current = Calendar.getInstance();
+
+        long diff = current.getTimeInMillis() - createdDate.getTimeInMillis();
+        long seconds = diff / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+
+        if (days > 1) {
+            formatted = days + " days ago";
+        } else if (hours > 1) {
+            formatted = hours + " hours ago";
+        } else if (minutes > 1) {
+            formatted = minutes + " minutes ago";
+        } else {
+            formatted = seconds + " seconds ago";
+        }
+
+        return formatted;
     }
 
 

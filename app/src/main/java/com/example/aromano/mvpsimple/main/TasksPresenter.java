@@ -2,9 +2,11 @@ package com.example.aromano.mvpsimple.main;
 
 import android.support.annotation.NonNull;
 
+import com.example.aromano.mvpsimple.addtask.AddEditTaskActivity;
 import com.example.aromano.mvpsimple.data.Task;
 import com.example.aromano.mvpsimple.data.source.ITasksDataSource;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -15,47 +17,45 @@ public class TasksPresenter implements ITasksPresenter {
 
     private final ITasksDataSource tasksRepository;
 
-    private final ITasksView tasksView;
-
-    private boolean isFirstLoad = true;
+    private final WeakReference<ITasksView> tasksView;
 
     public TasksPresenter(@NonNull ITasksDataSource tasksRepository, @NonNull ITasksView tasksView) {
         this.tasksRepository = tasksRepository;
-        this.tasksView = tasksView;
+        this.tasksView = new WeakReference<>(tasksView);
 
         tasksView.setPresenter(this);
     }
 
     @Override
     public void addTaskClicked() {
-        tasksView.showAddTask();
+        tasksView.get().showAddTask();
     }
 
     @Override
     public void editTaskClicked(Task task) {
-        tasksView.showEditTask(task);
+        tasksView.get().showEditTask(task);
     }
 
     @Override
     public void deleteTaskClicked(Task task) {
-        tasksView.showDeleteTask(task);
+        tasksView.get().showDeleteTask(task);
     }
 
     @Override
     public void deleteTask(Task task) {
         tasksRepository.deleteTask(task);
-        refreshTasks(false);
+        loadTasks(false);
     }
 
     @Override
     public void alterTaskState(Task task) {
         tasksRepository.alterTaskState(task);
-        refreshTasks(false);
+        loadTasks(false);
     }
 
     @Override
-    public void refreshTasks(boolean forceUpdate) {
-        tasksView.showProgressBar(true);
+    public void loadTasks(boolean forceUpdate) {
+        tasksView.get().showProgressBar(true);
 
         if (forceUpdate) {
             tasksRepository.invalidateData();
@@ -64,24 +64,33 @@ public class TasksPresenter implements ITasksPresenter {
         tasksRepository.loadTasks(new ITasksDataSource.LoadTasksCallback() {
             @Override
             public void onTasksLoaded(List<Task> tasks) {
-                tasksView.showProgressBar(false);
+                tasksView.get().showProgressBar(false);
                 processTasks(tasks);
             }
 
             @Override
             public void onDataNotAvailable() {
-                tasksView.showLoadingTasksError();
+                tasksView.get().showLoadingTasksError();
             }
         });
     }
 
     private void processTasks(List<Task> tasks) {
         // Show the list of tasks
-        tasksView.showTasks(tasks);
+        tasksView.get().showTasks(tasks);
     }
 
     @Override
     public void start() {
+        loadTasks(false);
+    }
 
+    @Override
+    public void result(int requestCode, int resultCode) {
+        switch (requestCode) {
+            case AddEditTaskActivity.RC_ADD_TASK:
+                loadTasks(false);
+                break;
+        }
     }
 }
